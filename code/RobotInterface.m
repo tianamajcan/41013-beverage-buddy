@@ -45,5 +45,6 @@ classdef RobotInterface < handle
         % functions
         % TODO: there may not be a need for agnostic functions, put here as
         % a placeholder
+    end
         
 end
