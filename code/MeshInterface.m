@@ -2,24 +2,41 @@
 % producing an interface class for all objects that are added to the
 % simulated environment
 
-classdef EnvironmentInterface < handle
+classdef MeshInterface < handle
     % an interface class that forms the basis of environment objects.
     % (meshes)
     
     properties
-        mesh;  % the object mesh
+        model;  % the object mesh
+        vertices;  % vertices at the object pose
         pose;  % the pose of the object
     end
     
     methods
-        function self = EnvironmentInterface(initial_pose, object_file)
+        function self = ObjectInterface(object_file, initial_pose)
             % constructor for the environment interface
             % accepts an initial pose and an object file to generate
+            
+            arguments
+                object_file;
+                initial_pose = eye(4);  % default position
+            end
+            self.model = PlaceObject(object_file);
+            self.vertices = get(self.model, 'Vertices');
+            self.updatePose(initial_pose);
+        end
+        
+        function delete(self)
+            %  deletes the object
+            delete(self.model);
         end
         
         % setters
         function updatePose(self, new_pose)
             % updates the pose of the object
+            trVertices = [self.vertices, ones(size(self.vertices, 1),1)] * new_pose';
+            self.pose = transform;
+            set(self.model, 'Vertices', trVertices(:,1:3));
         end
         
         function setScale(self, scale)
@@ -30,8 +47,13 @@ classdef EnvironmentInterface < handle
         % getters
         function r = getPose(self)
             % gets the pose of the object
+            r = self.pose;
         end
         
+        function r = getModel(self)
+            % gets the objects model
+            r = self.model;
+        end
         
     end
 end
