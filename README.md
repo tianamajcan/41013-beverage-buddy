@@ -6,6 +6,6 @@ Choose robot and gripper:
 
 To create ‘Beverage Buddy’ we are choosing to use Dobot Magician. Dobot Magician has a kit called ‘Soft Gripper’ which appear and act more like human fingers than the regular gripper types. This gripper is designed to handle more fragile items and would be more suitable for picking and placing glass or aluminium bottles. This type of Gripper is also safe for human-robot collaboration with special silicones which also allow for hygienic handling of beverages and an easy clean.
 
-There was an idea to use the grippers to do a small scale compressive test to show if the beverage container is glass or aluminium (very little force bends aluminium). 
+Object selection can be performed with a set of tags, similar to a QR code. This is easy enough for a computer to read. This will permit the robot to distinguish between either an aluminium can or a glass.
 
 Code style will follow as closely as practicably possible to pythons PEP-8 style guide
