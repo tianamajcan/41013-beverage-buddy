@@ -13,7 +13,7 @@ classdef MeshInterface < handle
     end
     
     methods
-        function self = ObjectInterface(object_file, initial_pose)
+        function self = MeshInterface(object_file, initial_pose)
             % constructor for the environment interface
             % accepts an initial pose and an object file to generate
             
@@ -35,7 +35,7 @@ classdef MeshInterface < handle
         function updatePose(self, new_pose)
             % updates the pose of the object
             trVertices = [self.vertices, ones(size(self.vertices, 1),1)] * new_pose';
-            self.pose = transform;
+            self.pose = new_pose;
             set(self.model, 'Vertices', trVertices(:,1:3));
         end
         
