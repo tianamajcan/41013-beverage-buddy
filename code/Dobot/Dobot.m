@@ -1,6 +1,5 @@
 classdef Dobot < RobotInterface
-    % DOBOT Summary of this class goes here
-    %   Detailed explanation goes here
+    % DOBOT Class for the Dobot robot
     
     properties
         
