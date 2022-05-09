@@ -19,10 +19,10 @@ classdef Drinks < MeshInterface
             % something unrecognised is input
             if drink_type == 'can'
                 % use the can model
-                model = 'brick.ply';
+                model = 'fanta_can.ply';
             else
                 % use the glass model
-                model = 'brick.ply';
+                model = 'beer_bottle.ply';
             end
             
             self@MeshInterface(model, initial_pose);
