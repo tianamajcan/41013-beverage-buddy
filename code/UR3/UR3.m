@@ -1,6 +1,5 @@
 classdef UR3 < RobotInterface
-    %DOBOT Summary of this class goes here
-    %   Detailed explanation goes here
+    %UR3 Class for the UR3 robot
     
     properties
         
@@ -8,7 +7,7 @@ classdef UR3 < RobotInterface
     
     methods
         function self = UR3(base, name)
-            %DOBOT Construct an instance of this class
+            %UR3 Construct an instance of this class
             %   Detailed explanation goes here
             arguments
                 base (4,4) {mustBeNumeric} = se3(se2(0, 0, 0));
