@@ -25,11 +25,12 @@ table = MeshInterface('environment_assets/table.ply', se3(se2(-1, 0, pi/2)));
 
 %add some cans
 fanta = Drinks('can', transl(-1, 0, 0.8));
-
+sprite = MeshInterface('environment_assets/sprite.jpg', transl(-1, 0.2, 0.8))
 %add chair
 
-
 %add fridge
+
+
 objects = {table, fanta};
 end
 
