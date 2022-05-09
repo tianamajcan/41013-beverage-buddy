@@ -17,6 +17,7 @@ classdef Drinks < MeshInterface
             
             % selecting the model to use, will default to glass if
             % something unrecognised is input
+            % TODO: add drink types, fanta, conke, bepis
             if drink_type == 'can'
                 % use the can model
                 model = 'brick.ply';
