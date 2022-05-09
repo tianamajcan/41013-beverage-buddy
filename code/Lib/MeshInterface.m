@@ -6,7 +6,7 @@ classdef MeshInterface < handle
     % an interface class that forms the basis of environment objects.
     % (meshes)
     
-    properties
+    properties (Access = private)
         model;  % the object mesh
         vertices;  % vertices at the object pose
         pose;  % the pose of the object
