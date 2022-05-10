@@ -115,7 +115,7 @@ classdef RobotInterface < handle
             % uses visual servoing to move the endeffector to the desired
             % target position
             
-            q0 = self.getJoints;
+            q0 = self.getJoints';  % this needs to be transposed, either that or everything else needs to be (they just gotta be the same and this is how its done in the tut so don't go breaking it)
             cam_pos = self.getEndefector;
             
             % plotting the camera display
