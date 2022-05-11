@@ -30,12 +30,6 @@ classdef RobotInterface < handle
 
         end
         
-        function r = getTrajectory(self, oldQ, newQ)
-            % gets the trajectory using a trapezoidal trajectory
-            % oldQ is the starting joint configuration
-            % newQ is the new joint configuration
-        end
-        
         % setters
         function setBase(self, pose)
             % sets the robot base to the given pose
@@ -45,5 +39,7 @@ classdef RobotInterface < handle
         % functions
         % TODO: there may not be a need for agnostic functions, put here as
         % a placeholder
+        
+    end
         
 end
