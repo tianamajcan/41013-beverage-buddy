@@ -6,7 +6,6 @@ classdef RobotInterface < handle
     
     properties
         robot;  % serialLink object
-        qMatrix;
     end
     
     methods
@@ -28,15 +27,30 @@ classdef RobotInterface < handle
             
         end
         
-        function r = getTrajectory(self, goal, steps, qGuess)
-            % gets the trajectory using a trapezoidal trajectory
-            % goal is the pose (4x4 transform) of the location
-            % steps are the number of steps desired for trajectory
-            % qGuess is an optional parameter 
-            % uses the current joint state as initial state 
+        function r = getTrajectory(self, trGoal, steps, qGuess, mask)
+            % gets the trajectory using a quintic polynomial profile and
+            % returns a matrix of joint configurations.
+            % goal is the pose (4x4 transform) of the location 
+            % steps are the number of steps desired for trajectory 
+            % qGuess is an optional parameter to specify a guess for
+            % solving inverse kinematics.
+            % Uses the current joint state as initial state
+            arguments
+                self
+                trGoal
+                steps
+                qGuess
+                mask
+            end
 
+            q0 = self.robot.getpos();
+            qf = self.robot.ikcon(trGoal, qGuess, 'mask', mask);
+        
+            qMatrix = zeros(steps, length(self.robot.links));
+            qMatrix = jtraj(q0, qf, steps);
 
-            
+            r = qMatrix;
+        
         end
                 
         % setters
