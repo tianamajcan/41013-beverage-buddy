@@ -27,6 +27,51 @@ classdef UR3 < RobotInterface
             % model of dobot
             self.robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', name, 'base', base);            
         end
+
+        function r = getRMRCTrajectory(self, trGoal, steps, qGuess, dt)
+            % gets a trajectory using a trapezoidal profile, returns a
+            % matrix of joint configurations
+            % tr_f is the pose (4x4 transform) of the goal location
+            % steps are the number of steps desired for trajectory
+            % qGuess if not specified is the current position
+            % dt is the time step increment
+            % uses the current joint state as initial state 
+            arguments
+                self
+                trGoal (4,4) {mustBeNumeric}
+                steps {mustBeNumeric} = 50;
+                qGuess (1,:) {mustBeNomeric} = self.robot.getpos();
+                dt = 0.2;
+            end
+            
+            trInitial = self.getEndEffector(); %get transform of current end effector position
+
+            x_0 = [trInitial(1:3,4)' tr2rpy(trInitial)]';     % extract the cartesian and rpy values from the initial transform
+            x_f = [trGoal(1:3,4)' tr2rpy(trGoal)]';     % extract the cartesian and rpy values from the goal transform
+
+            x = zeros(6,steps);     % create vector for storing waypoints
+            s = lspb(0,1,steps);    % Create interpolation scalar using trapezoidal profile
+            
+            % Create waypoints along x,y,z,r,p,y
+            for i = 1:steps
+                x(:,i) = x_0*(1-s(i)) + s(i)*x_f; 
+            end
+
+            qMatrix = nan(steps,length(self.robot.links));
+
+            qMatrix(1,:) = self.robot.ikine(trGoal, qGuess, [1 1 1 1 1 1]);  % Solve for joint angles
+
+            for i = 1:steps-1
+                xdot = (x(:,i+1) - x(:,i))/deltaT;               % Calculate velocity at discrete time step
+                J = ur3.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
+                qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
+                qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
+            end
+
+            r = qMatrix;
+
+        end
+
     end
 end
 
