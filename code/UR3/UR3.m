@@ -6,12 +6,13 @@ classdef UR3 < RobotInterface
     end
     
     methods
-        function self = UR3(base, name)
+        function self = UR3(base, name, q0)
             %UR3 Construct an instance of this class
             %   Detailed explanation goes here
             arguments
                 base (4,4) {mustBeNumeric} = se3(se2(0, 0, 0));
                 name {mustBeText} = 'UR3';
+                q0 = [0, -0.7854, 1.5708, -0.7854, 1.5708, 0];
             end
 
             limits = [ -2*pi 2*pi];
@@ -25,7 +26,9 @@ classdef UR3 < RobotInterface
             
             % TODO: change default plot3dopts to have the path to the 3d
             % model of dobot
-            self.robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', name, 'base', base);            
+            self.robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', name, 'base', base);
+            self.robot.plot(q0);
+            
         end
 
         function r = getRMRCTrajectory(self, trGoal, steps, qGuess, dt)
