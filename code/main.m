@@ -1,3 +1,3 @@
 % main program for the robot project
 
-environmentSetup(figure(1));
+[drinks, objects] = environmentSetup(figure(1));
