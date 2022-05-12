@@ -27,7 +27,8 @@ table = MeshInterface('environment_assets/table.ply', se3(se2(-1, 0, pi/2)));
 chair = MeshInterface('chair.ply', se3(se2(0.25, 0.5, -pi/2)));
 
 % add fridge
-fridge = MeshInterface('fridge.ply', transl(-1.2, -1.4, 0));
+fridgeBase = MeshInterface('fridge_base.ply', transl(-1.1, -1.4, 0)*trotz(pi/2));
+fridgeDoor = MeshInterface('fridge_door.ply', transl(-0.85, -1.75, 0)*trotz(pi/2));
 
 % add some drinks in the fridge
 
@@ -35,8 +36,8 @@ fridge = MeshInterface('fridge.ply', transl(-1.2, -1.4, 0));
 drinks = cell(3,4);
 
 % get position and rotation matrix of fridge shelf
-[R, T] = tr2rt(fridge.getPose());
-shelf = [T(1:2)', T(3)+0.7];
+[R, T] = tr2rt(fridgeBase.getPose());
+shelf = [T(1:2)', T(3)+0.65];
 
 % put drinks in the fridge, line up in y direction
 for i = 1:3
@@ -47,7 +48,7 @@ for i = 1:3
 end
 
 
-objects = {table, chair, fridge};
+objects = {table, chair, fridgeBase, fridgeDoor};
 
 end
 
