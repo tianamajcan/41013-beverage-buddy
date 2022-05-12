@@ -6,6 +6,7 @@ classdef RobotInterface < handle
     
     properties
         robot;  % serialLink object
+        q0;     % nice initial joint configuration
     end
     
     methods
@@ -62,6 +63,9 @@ classdef RobotInterface < handle
         % functions
         % TODO: there may not be a need for agnostic functions, put here as
         % a placeholder
+        function plot(self)
+            self.robot.plot(self.getJoints());
+        end
         
     end
         
