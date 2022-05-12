@@ -6,13 +6,12 @@ classdef Dobot < RobotInterface
     end
     
     methods
-        function self = Dobot(base, name, q0)
+        function self = Dobot(base, name)
             %DOBOT Construct an instance of this class
             %   Detailed explanation goes here
             arguments
                 base (4,4) {mustBeNumeric} = se3(se2(0, 0, 0));
                 name {mustBeText} = 'Dobot';
-                q0 = [0, 0.7854, 0.7854, -0.7854, 0]
             end
 
             % using suggested joint limits from Subject Resources
@@ -25,11 +24,8 @@ classdef Dobot < RobotInterface
             % TODO: change default plot3dopts to have the path to the 3d
             % model of dobot
             self.robot = SerialLink([L1 L2 L3 L4 L5], 'name', name, 'base', base);
-            self.robot.plot(q0);
             
         end
-<<<<<<< Updated upstream
-=======
 
         function r = getRMRCTrajectory(self, trGoal, steps, qGuess, dt)
             % gets a trajectory using a trapezoidal profile
@@ -73,11 +69,6 @@ classdef Dobot < RobotInterface
                 qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
                 qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
             end
-
-            r = qMatrix;
-
-        end
->>>>>>> Stashed changes
     end
 end
 
