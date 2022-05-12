@@ -26,6 +26,12 @@ table = MeshInterface('environment_assets/table.ply', se3(se2(-1, 0, pi/2)));
 % add chair
 chair = MeshInterface('chair.ply', se3(se2(0.25, 0.5, -pi/2)));
 
+%add rubbish bin
+redbin = MeshInterface('redbin_rubbish.ply');
+
+%add recycling bin
+
+
 % add fridge
 fridge = MeshInterface('fridge.ply', transl(-1.2, -1.4, 0));
 
@@ -47,7 +53,7 @@ for i = 1:3
 end
 
 
-objects = {table, chair, fridge};
+objects = {table, chair, fridge, redbin};
 
 end
 
