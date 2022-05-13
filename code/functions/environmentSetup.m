@@ -34,7 +34,7 @@ yellowbin = MeshInterface('yellowbin_recycling.ply', transl(-1.2,1.5,0));
 
 % add fridge
 fridgeBase = MeshInterface('fridge_base.ply', transl(-1.1, -1.4, 0)*trotz(pi/2));
-fridgeDoor = MeshInterface('fridge_door.ply', transl(-0.85, -1.75, 0)*trotz(pi/2));
+% fridgeDoor = MeshInterface('fridge_door.ply', transl(-0.85, -1.75, 0)*trotz(pi/2));
 
 % add some drinks in the fridge
 
@@ -53,7 +53,7 @@ for i = 1:3
     drinks{i, 4} = Drink('beer', transl((shelf(1)-0.2)+(0.1*i), shelf(2)+0.2, shelf(3)));
 end
 
-objects = {table, chair, fridgeBase, fridgeDoor, yellowbin, redbin};
+objects = {table, chair, fridgeBase, yellowbin, redbin};
 
 end
 
