@@ -25,7 +25,8 @@ classdef Dobot < RobotInterface
             % TODO: change default plot3dopts to have the path to the 3d
             % model of dobot
             self.robot = SerialLink([L1 L2 L3 L4 L5], 'name', name, 'base', base);
-            self.robot.plot(q0, 'noarrow');
+            self.q0 = q0;
+            self.robot.plot(self.q0, 'noarrow');
             
         end
 
