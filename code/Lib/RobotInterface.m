@@ -24,7 +24,7 @@ classdef RobotInterface < handle
         
         function r = getEndEffector(self)
             % solve fkine from current point position
-            r = self.robot.fkine(getJoints());
+            r = self.robot.fkine(self.robot.getpos());
             
         end
         
@@ -39,13 +39,13 @@ classdef RobotInterface < handle
             arguments
                 self
                 trGoal
-                steps
-                qGuess
-                mask
+                steps = 50;
+                qGuess = self.q0
+                mask = [1 1 1 1 1 1];
             end
 
             q0 = self.robot.getpos();
-            qf = self.robot.ikcon(trGoal, qGuess, 'mask', mask);
+            qf = self.robot.ikcon(trGoal, qGuess);
         
             qMatrix = zeros(steps, length(self.robot.links));
             qMatrix = jtraj(q0, qf, steps);
