@@ -56,6 +56,7 @@ for i = 1:3
     drinks{i, 4} = Drink('beer', transl((shelf(1)-0.2)+(0.1*i), shelf(2)+0.2, shelf(3)));
 end
 
+
 objects = {table, chair, fridgeBase, coaster, yellowbin, redbin};
 
 end

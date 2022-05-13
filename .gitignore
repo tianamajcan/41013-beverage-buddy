@@ -1,3 +1,4 @@
 *.asv
 *.log
-.DS_Store
+*.DS_Store
+**/.DS_Store
