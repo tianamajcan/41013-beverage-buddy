@@ -4,8 +4,15 @@
 
 % place robots
 ur3 = UR3(transl(-0.7, -0.8, 0.8)*trotz(-pi/2));
-dobot = Dobot(transl(-1.2, -1.5, 1.6));
+dobot = Dobot(transl(-0.95, -1.4, 1));
 
-% grab a can
+%% get can
+steps = 50;
+traj = ur3.getTrajectory(drinks{3,4}.getPose()*transl(0,0,0.08)*trotx(pi/2)*troty(-pi/2), steps, ur3.q0);
+
+for i = 1:steps
+    ur3.robot.animate(traj(i,:));
+end
+
 
 % sort?
