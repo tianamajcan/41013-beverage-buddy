@@ -27,7 +27,7 @@ table = MeshInterface('environment_assets/table.ply', se3(se2(-1, 0, pi/2)));
 chair = MeshInterface('chair.ply', se3(se2(0.25, 0.75, -pi/2)));
 
 % add coaster (where the drink must be placed)
-coaster = MeshInterface('coaster.ply', transl(-0.75,0.1,0.78));
+coaster = MeshInterface('coaster.ply', transl(-0.75,-0.1,0.78));
 
 %add rubbish bin
 redbin = MeshInterface('redbin_rubbish.ply', transl(-0.4,-1.5,0));
