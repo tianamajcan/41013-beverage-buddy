@@ -10,7 +10,7 @@ classdef LightCurtain < SensorMock
         
         function self = LightCurtain(sensed_objects, corner_points, sensor_name)
             % class for the light curtain
-            % accepts a list of objects that can pass through the light 
+            % accepts a list of objects that are being tracked 
             % curtain plane
             % NOTE: this will only work with robot for now
             
@@ -54,13 +54,58 @@ classdef LightCurtain < SensorMock
             % been interrupted or not.
             % 1 is interrupted
             % 0 is uninterrupted
+
+            for i = 1:length(self.sensed_objects)
+                obj = self.sensed_objects{i};
+                % check the objects superclasses
+                classes = superclasses(obj);
+
+                for j = 1:length(classes)
+                    % check if sensed object is a robot
+                    if (strcmp('RobotInterface', classes{j}))
+                        lineSegments = obj.getLinksAsLines();
+
+                        % check if any of the robot links intersect the plane, if
+                        % so return 1 
+                        for k = 1:size(lineSegments,3)
+                            % check if any links are intersecting
+                            [point, check] = LinePlaneIntersection(self.plane_normal, self.plane_point, lineSegments(1,:,k), lineSegments(2,:,k));
+
+                            if ((check == 1) || (check == 2)) 
+                                % since the plane is mathematically defined
+                                % as infinite, we must check if the
+                                % intersection has occures within the
+                                % bounds of the user defined "window" in
+                                % which the light curtain physically exists
+
+                                % get the max and min x,y,z coordinates on
+                                % the window
+                                ranges = [min(self.corner_points(:,1)), max(self.corner_points(:,1));
+                                          min(self.corner_points(:,2)), max(self.corner_points(:,2));
+                                          min(self.corner_points(:,3)), max(self.corner_points(:,3))];
+                                
+                                % only check within the dimensions where
+                                % there is a difference between the max and
+                                % min values
+                                empty = ((ranges(:,2) - ranges(:,1)) ~= 0);
+                                ranges = ranges(empty,:);
+                                checkPoint = point(empty)';
+
+                                % checks if the point is within the bounds
+                                if ((ranges(:,1) < checkPoint) & (checkPoint < ranges(:,2)))
+                                    disp(sprintf("!!!COLLISION DETECTED!!!\nRobot: %s  Point [%.3f,%.3f,%.3f]\nEmergency stop initiated.", obj.robot.name, point(1), point(2), point(3)));
+                                    r = 1;
+                                    return
+                                end
+                            end
+                        end
+                    end                
+                end
+            end
             
-            % test the collision
-
-
-
             r = 0;
         end
+
     end
-    
+
 end
