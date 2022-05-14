@@ -100,7 +100,7 @@ classdef RobotInterface < handle
             % check that the robot is being displayed
             % if its not don't create the camera
             try
-                pos = self.getEndefector;
+                pos = self.getEndEffector;
             catch
                 error(['robot not displayed. cannot create camera.\n',...
                       'make sure the robot has been plotted']);
@@ -124,9 +124,9 @@ classdef RobotInterface < handle
         
         function vsUpdateCamera(self)
             % updates the visual servoing camera to the current
-            % endeffector position
+            % EndEffector position
             try
-                self.cam.T = self.getEndefector;
+                self.cam.T = self.getEndEffector;
             catch
                 error(['unable to update camera position\n',...
                        'possibly due to unrended robot']);
@@ -134,11 +134,11 @@ classdef RobotInterface < handle
         end
         
         function vsMove(self, object_points, target_points)
-            % uses visual servoing to move the endeffector to the desired
+            % uses visual servoing to move the EndEffector to the desired
             % target position
             
             q0 = self.getJoints';  % this needs to be transposed, either that or everything else needs to be (they just gotta be the same and this is how its done in the tut so don't go breaking it)
-            cam_pos = self.getEndefector;
+            cam_pos = self.getEndEffector;
             
             % plotting the camera display
             self.cam.plot(target_points, '*');
@@ -166,7 +166,7 @@ classdef RobotInterface < handle
                 v = lambda * pinv(J) * e;
                 
                 % compute joint velocities
-                J2 = self.robot.jacobn(q0);  % cam_pos is the same as the endefector pos
+                J2 = self.robot.jacobn(q0);  % cam_pos is the same as the EndEffector pos
                 Jinv = pinv(J2);
                 qp = Jinv * v;
                 
