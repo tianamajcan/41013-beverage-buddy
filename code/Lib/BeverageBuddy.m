@@ -9,6 +9,11 @@ classdef BeverageBuddy < handle
             % Beverage buddy class
             % constructs a beverage buddy object. This is used to handle
             % all the different features of the beverage buddy
+
+            % should either launch GUI, or launch an instance of beverage buddy
+            % from the GUI (probably the latter)
+
+            % pass the poses of the drinks? 
         end
         
         function getDrink(self, drink)
