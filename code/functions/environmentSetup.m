@@ -21,19 +21,19 @@ surf([-1.99,-1.99;-1.99,-1.99],[-4,4;-4,4], [3,3;0,0],'CData',imread('fence.jpg'
 surf([-2,2;-2,2], [3.99,3.99;3.99,3.99], [0,0;3,3],'CData',imread('brick.jpg'),'FaceColor','texturemap');
 
 % add table
-table = MeshInterface('environment_assets/table.ply', se3(se2(-1, 0, pi/2)));
+table = MeshInterface('environment_assets/table.ply', se3(se2(-1, -1, pi/2)));
 
 % add chair
 chair = MeshInterface('chair.ply', se3(se2(0.25, 0.75, -pi/2)));
 
 % add coaster (where the drink must be placed)
-coaster = MeshInterface('coaster.ply', transl(-0.75,0.1,0.78));
+coaster = MeshInterface('coaster.ply', transl(-0.75,-0.1,0.78));
 
 %add rubbish bin
-redbin = MeshInterface('redbin_rubbish.ply', transl(-0.4,-1.5,0));
+redbin = MeshInterface('redbin_rubbish.ply', transl(-0.3,-1.6,0));
 
 %add recycling bin
-yellowbin = MeshInterface('yellowbin_recycling.ply', transl(-1,-1.5,0));
+yellowbin = MeshInterface('yellowbin_recycling.ply', transl(-0.3,-1.1,0));
 
 % add fridge
 fridgeBase = MeshInterface('fridge_base.ply', transl(-1.3, -0.6, 0.78)*trotz(pi/2));
