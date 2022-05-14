@@ -25,7 +25,8 @@ classdef Dobot < RobotInterface
             % TODO: change default plot3dopts to have the path to the 3d
             % model of dobot
             self.robot = SerialLink([L1 L2 L3 L4 L5], 'name', name, 'base', base);
-            self.robot.plot(q0);
+            self.q0 = q0;
+            self.robot.plot(self.q0, 'noarrow', 'nojoints');
             
         end
 
@@ -66,8 +67,8 @@ classdef Dobot < RobotInterface
             qMatrix(1,:) = self.robot.ikine(trGoal, qGuess, [1 1 1 0 0 1]);  % Solve for joint angles
 
             for i = 1:steps-1
-                xdot = (x(:,i+1) - x(:,i))/deltaT;               % Calculate velocity at discrete time step
-                J = ur3.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
+                xdot = (x(:,i+1) - x(:,i))/dt;               % Calculate velocity at discrete time step
+                J = self.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
                 qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
                 qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
             end

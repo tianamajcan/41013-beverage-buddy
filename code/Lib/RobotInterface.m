@@ -6,6 +6,7 @@ classdef RobotInterface < handle
     
     properties
         robot;  % serialLink object
+        q0;     % nice initial joint configuration
         cam;
     end
     
@@ -19,14 +20,16 @@ classdef RobotInterface < handle
         function r = getJoints(self)
             % get joint positions from SerialLink model
             r = self.robot.getpos();
+            
         end
         
-        function r = getEndefector(self)
+        function r = getEndEffector(self)
             % solve fkine from current point position
-            r = self.robot.fkine(getJoints());
+            r = self.robot.fkine(self.robot.getpos());
+            
         end
         
-        function r = getTrajectory(self, trGoal, steps, qGuess, mask)
+        function r = getTrajectory(self, trGoal, steps, qGuess)
             % gets the trajectory using a quintic polynomial profile and
             % returns a matrix of joint configurations.
             % goal is the pose (4x4 transform) of the location 
@@ -35,15 +38,14 @@ classdef RobotInterface < handle
             % solving inverse kinematics.
             % Uses the current joint state as initial state
             arguments
-                self
-                trGoal
-                steps
-                qGuess
-                mask
+                self;
+                trGoal;
+                steps = 50;
+                qGuess = self.q0;
             end
 
             q0 = self.robot.getpos();
-            qf = self.robot.ikcon(trGoal, qGuess, 'mask', mask);
+            qf = self.robot.ikcon(trGoal, qGuess);
         
             qMatrix = zeros(steps, length(self.robot.links));
             qMatrix = jtraj(q0, qf, steps);
@@ -51,7 +53,7 @@ classdef RobotInterface < handle
             r = qMatrix;
         
         end
-        
+                
         % setters
         function setBase(self, pose)
             % sets the robot base to the given pose
@@ -62,9 +64,8 @@ classdef RobotInterface < handle
             % animates the robot to the given joints
             self.robot.animate(joints)
         end
-        
-        % functions
 
+        % functions
         function plot(self)
             % plots the robot, depricated by showRobot
             self.robot.plot(self.getJoints());
@@ -188,7 +189,6 @@ classdef RobotInterface < handle
             % display the object points on the camera display
             
         end
-        
+
+
     end
-        
-end
