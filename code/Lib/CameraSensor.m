@@ -1,3 +1,8 @@
+% hypothetically we could use a real camera and put an invisible sphere in
+% any object of interest - probably don't have the time to get it working
+% food for thought if anyone else has spare time haha
+% also would mean that the vscam could just use a camera sensor
+
 classdef CameraSensor < SensorMock
     properties
     end
@@ -25,6 +30,7 @@ classdef CameraSensor < SensorMock
             % of the time for simplicity
             r = self.getObjectPoses();
         end
+        
         
     end
     
