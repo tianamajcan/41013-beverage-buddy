@@ -17,20 +17,39 @@ classdef RobotInterface < handle
         end
         
         function r = getJoints(self)
-            % returns the joint state of the robot
-            r = self.robot.getpos;
+            % get joint positions from SerialLink model
+            r = self.robot.getpos();
         end
         
         function r = getEndefector(self)
-            % returns the endefector position of the robot
-            r = self.robot.fkine(self.robot.getpos);
+            % solve fkine from current point position
+            r = self.robot.fkine(getJoints());
         end
         
-        function r = getTrajectory(self, newQ)
-            % gets the trajectory using a trapezoidal trajectory
-            % newQ is the new joint configuration
-            % uses the current configuration
+        function r = getTrajectory(self, trGoal, steps, qGuess, mask)
+            % gets the trajectory using a quintic polynomial profile and
+            % returns a matrix of joint configurations.
+            % goal is the pose (4x4 transform) of the location 
+            % steps are the number of steps desired for trajectory 
+            % qGuess is an optional parameter to specify a guess for
+            % solving inverse kinematics.
+            % Uses the current joint state as initial state
+            arguments
+                self
+                trGoal
+                steps
+                qGuess
+                mask
+            end
 
+            q0 = self.robot.getpos();
+            qf = self.robot.ikcon(trGoal, qGuess, 'mask', mask);
+        
+            qMatrix = zeros(steps, length(self.robot.links));
+            qMatrix = jtraj(q0, qf, steps);
+
+            r = qMatrix;
+        
         end
         
         % setters
@@ -45,8 +64,11 @@ classdef RobotInterface < handle
         end
         
         % functions
-        % TODO: there may not be a need for agnostic functions, put here as
-        % a placeholder
+
+        function plot(self)
+            % plots the robot, depricated by showRobot
+            self.robot.plot(self.getJoints());
+        end
         
         function showRobot(self)
             % plots the robot in the default configuration. Not the only
@@ -70,7 +92,6 @@ classdef RobotInterface < handle
         end
         
         % visual servoing
-        % visual servoing uses a real camera
         function vsCreateCamera(self)
             % creates a camera for visual servoing
             % defaults to not display the camera
