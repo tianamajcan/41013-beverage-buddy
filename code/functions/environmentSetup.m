@@ -2,6 +2,12 @@ function [drinks, objects] = environmentSetup(figureHandle)
 % ENVIRONMENTSETUP Performs the setup of the simulation environment, pass
 % the desired figure handle to the function to ensure the environment is
 % plotted in the same figure as robots
+% drinks = {drink_index, drink_type}
+% fanta     1
+% sprite    2
+% coke      3
+% beer      4
+% drink number counts down from 3
 
 figureHandle
 hold on;
