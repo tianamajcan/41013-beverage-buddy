@@ -6,6 +6,8 @@ classdef BeverageBuddy < handle
         ur3;
         dobot;
         drinkOffset;
+        estop = 0;
+        resume = 0;
     end
     
     methods
@@ -38,6 +40,7 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                self.checkEstop();
             end
             
             % taking the can out
@@ -49,6 +52,7 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                self.checkEstop();
             end
             
             % move sideways, holding the can upright
@@ -60,6 +64,7 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                self.checkEstop();
             end
             
             % move to the coaster
@@ -70,6 +75,7 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                self.checkEstop();
             end
             
             % move away from the coaster
@@ -78,6 +84,7 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                self.checkEstop();
             end
             
             % go to pick up the can again
@@ -86,6 +93,7 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                self.checkEstop();
             end
             
             % grab can and move away
@@ -96,6 +104,7 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                self.checkEstop();
             end
             
             % give the can to the dobot
@@ -107,6 +116,7 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                self.checkEstop();
             end
 
             steps = 20;
@@ -114,6 +124,7 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                self.checkEstop();
             end
 
             self.drinks{drink_index,drink}.updatePose(self.drinks{drink_index,drink}.getPose()*trotz(pi/2));
@@ -128,6 +139,7 @@ classdef BeverageBuddy < handle
 
                 for i = 1:steps
                     self.dobot.robot.animate(traj(i,:));
+                    self.checkEstop();
                 end
                 
                 % put in the red bin
@@ -139,6 +151,7 @@ classdef BeverageBuddy < handle
                     self.dobot.robot.animate(traj(i,:));
                     tr = self.dobot.getEndEffector();
                     self.drinks{drink_index,drink}.updatePose(tr*trotx(pi)*transl(0,0,-0.13));
+                    self.checkEstop();
                 end
                 
                 % drink falling in the bin
@@ -164,8 +177,27 @@ classdef BeverageBuddy < handle
         
         function checkEstop(self)
             % polls the estop and waits for the reset
+            if self.estop == 1
+                disp('EMERGENCY STOP');
+                self.resume = 0;  % ensure that the resume state hasn't been accidentally set
+                while self.resume == 0
+                    pause(1);  % just don't want it to run too fast
+                end
+                self.resume = 0;  % reset resume, estop should already be reset.
+                disp('RESUMING');
+            end
         end
         
+        function toggleEstop(self)
+            % toggles the estop
+            if self.estop == 1
+                self.estop = 0;
+            else
+                self.estop = 1;
+            end
+            
+            self.estop
+        end
         
     end
 end
