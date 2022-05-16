@@ -53,6 +53,32 @@ classdef RobotInterface < handle
             r = qMatrix;
         
         end
+
+        function r = getLinksAsLines(self)
+            % gets each link as a line segment defined by beginning point and end
+            % point
+            L = self.robot.links;  
+            n = length(L); 
+            q = self.getJoints();
+           
+            trs = zeros(4, 4, n+1);  % array to hold the pose of every joint
+            linePoints = zeros(2, 3, n); % array to hold the line segment points
+            
+            trs(:,:,1) = self.robot.base;   % first transform is the base pose
+            
+            % calculate transform of every joint using forward kinematics
+            for i = 1:n
+                trs(:,:,i+1) = trs(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
+            end
+            
+            % get the cartesian coordinates of each joint
+            for i = 1:n
+                linePoints(1,:,i) = trs(1:3,4, i)';
+                linePoints(2,:,i) = trs(1:3,4, i+1)';
+            end
+            
+            r = linePoints;
+        end
                 
         % setters
         function setBase(self, pose)
@@ -100,7 +126,7 @@ classdef RobotInterface < handle
             % check that the robot is being displayed
             % if its not don't create the camera
             try
-                pos = self.getEndefector;
+                pos = self.getEndEffector;
             catch
                 error(['robot not displayed. cannot create camera.\n',...
                       'make sure the robot has been plotted']);
@@ -124,9 +150,9 @@ classdef RobotInterface < handle
         
         function vsUpdateCamera(self)
             % updates the visual servoing camera to the current
-            % endeffector position
+            % EndEffector position
             try
-                self.cam.T = self.getEndefector;
+                self.cam.T = self.getEndEffector;
             catch
                 error(['unable to update camera position\n',...
                        'possibly due to unrended robot']);
@@ -134,11 +160,11 @@ classdef RobotInterface < handle
         end
         
         function vsMove(self, object_points, target_points)
-            % uses visual servoing to move the endeffector to the desired
+            % uses visual servoing to move the EndEffector to the desired
             % target position
             
             q0 = self.getJoints';  % this needs to be transposed, either that or everything else needs to be (they just gotta be the same and this is how its done in the tut so don't go breaking it)
-            cam_pos = self.getEndefector;
+            cam_pos = self.getEndEffector;
             
             % plotting the camera display
             self.cam.plot(target_points, '*');
@@ -166,7 +192,7 @@ classdef RobotInterface < handle
                 v = lambda * pinv(J) * e;
                 
                 % compute joint velocities
-                J2 = self.robot.jacobn(q0);  % cam_pos is the same as the endefector pos
+                J2 = self.robot.jacobn(q0);  % cam_pos is the same as the EndEffector pos
                 Jinv = pinv(J2);
                 qp = Jinv * v;
                 
@@ -192,3 +218,4 @@ classdef RobotInterface < handle
 
 
     end
+end
