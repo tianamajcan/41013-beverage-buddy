@@ -26,6 +26,9 @@ surf([-2,-2;2,2],[-4,4;-4,4],[0.01,0.01;0.01,0.01],'CData',imread('grass.jpg'),'
 surf([-1.99,-1.99;-1.99,-1.99],[-4,4;-4,4], [3,3;0,0],'CData',imread('fence.jpg'),'FaceColor','texturemap');
 surf([-2,2;-2,2], [3.99,3.99;3.99,3.99], [0,0;3,3],'CData',imread('brick.jpg'),'FaceColor','texturemap');
 
+% add warning sign
+warning = MeshInterface('warningsign1.ply', transl(-1.25,-1.65,0.25));
+
 % add table
 table = MeshInterface('environment_assets/table.ply', se3(se2(-1, -1, pi/2)));
 
@@ -63,7 +66,7 @@ for i = 1:3
 end
 
 
-objects = {table, chair, fridgeBase, coaster, yellowbin, redbin};
+objects = {warning, table, chair, fridgeBase, coaster, yellowbin, redbin};
 
 end
 
