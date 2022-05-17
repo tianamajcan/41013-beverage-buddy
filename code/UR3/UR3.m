@@ -77,6 +77,7 @@ classdef UR3 < RobotInterface
                     lambda = 0;
                 end
                 invJ = inv(J'*J + lambda *eye(6))*J';                                   % DLS Inverse
+%                 qdot = invJ*xdot;                              % Solve velocitities via RMRC
                 qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
                 qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
             end
