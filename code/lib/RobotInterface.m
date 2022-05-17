@@ -91,6 +91,70 @@ classdef RobotInterface < handle
             self.robot.animate(joints)
         end
 
+        function setLinksAsEllipsoids(self)
+            % sets the robot model to have each link approximated by an
+            % ellipsoid
+            n = length(self.robot.links);
+
+            % get links as lines
+            linePoints = self.getLinksAsLines();
+
+            radii = zeros(length(n+1), 3);      % preallocate
+%             vertices = empty(1,3, n+1);       % preallocate array to store ellipsoid vertices
+            vertices = cell(n+1, 3);
+
+            % make the base ellipsoid a short sphere
+            radii(1,:) = [0.05, 0.05, 0.05];
+            [vertices{1,1},vertices{1,2},vertices{1,3}] = ellipsoid(0, 0, 0, radii(1,1), radii(1,2), radii(1,3));
+
+            % get the rest of the ellipsoids for each link
+            for i = 2:size(linePoints, 3)+1
+                % find the midpoint of each link
+                dx = abs((linePoints(1,1,i-1) - linePoints(2,1,i-1)));
+                dy = abs((linePoints(1,2,i-1) - linePoints(2,2,i-1)));
+                dz = abs((linePoints(1,3,i-1) - linePoints(2,3,i-1)));
+                
+                % check if the link has a component in the z direction
+                if (self.robot.links(i-1).d ~= 0)
+                    if self.robot.links(i-1).alpha == pi/2
+                        radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
+                        radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0-max([dx dy dz])/2, 0, radii(i,1), radii(i,2), radii(i,3));
+                    else
+                        radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
+                        radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0+max([dx dy dz])/2, 0, radii(i,1), radii(i,2), radii(i,3));
+                    end
+                
+                % check if the link has a component in the x direction
+                elseif (self.robot.links(i-1).a ~= 0)
+                    radii(i,1) = max([dx dy dz])/2 + 0.1;     % the prinicple radii should half the length of the longest axis plus a little extra
+                    radii(i,2:3) = radii(i,1)*0.3;    % the other radii can be proportional to the main one
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0+radii(i,1)-0.1, 0, 0, radii(i,1), radii(i,2), radii(i,3));
+                else
+                    % do default
+                    radii(i,1) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
+                    radii(i,2:3) = radii(i,1)*0.25;    % the other radii can be proportional to the main one
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0, 0, radii(i,1), radii(i,2), radii(i,3));
+                end
+
+                if i == (size(linePoints, 3)+1)
+                    radii(i,3) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
+                    radii(i,1:2) = radii(i,3)*0.3;    % the other radii can be proportional to the main one
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0, 0-max([dx dy dz])/2, radii(i,1), radii(i,2), radii(i,3));
+                end
+            end
+
+            for i = 1:n+1   
+                self.robot.points{i} = [vertices{i,1}(:), vertices{i,2}(:),vertices{i,3}(:)];
+                warning off
+                self.robot.faces{i} = delaunay(self.robot.points{i});
+                warning on
+            end
+        end
+
         % functions
         function plot(self)
             % plots the robot, depricated by showRobot
