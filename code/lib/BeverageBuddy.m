@@ -5,6 +5,7 @@ classdef BeverageBuddy < handle
         objects;
         ur3;
         dobot;
+        sensors;
         drinkOffset;
         estop = 0;
         resume = 0;
@@ -28,6 +29,10 @@ classdef BeverageBuddy < handle
             % place robots
             self.ur3 = UR3(transl(-0.7, -0.6,0.9)*trotz(-pi/2));
             self.dobot = Dobot(transl(-0.6, -1.4,0.85));
+
+            % place sensors
+            self.sensors{1} = LightCurtain(self.objects, {self.ur3, self.dobot}, [-0.5, 0, 0.78; -0.5, 0, 1.5; -1.5, 0, 0.78; -1.5, 0, 1.5], "Light Curtain");
+            self.sensors{2} = CollisionSensor(self.objects, {self.ur3,self.dobot}, "Magic Collision Sensor");
             
         end
         
