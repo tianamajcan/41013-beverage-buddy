@@ -8,6 +8,9 @@ classdef RobotInterface < handle
         robot;  % serialLink object
         q0;     % nice initial joint configuration
         cam;
+        ellipsoid_radii;
+        ellipsoid_centres;
+        joint_trs;
     end
     
     methods
@@ -79,6 +82,25 @@ classdef RobotInterface < handle
             
             r = linePoints;
         end
+
+        function r = getJointTransforms(self)
+            L = self.robot.links;  
+            n = length(L); 
+            q = self.getJoints();
+           
+            trs = zeros(4, 4, n+1);  % array to hold the pose of every joint
+            trs(:,:,1) = self.robot.base;   % first transform is the base pose
+            
+            % calculate transform of every joint using forward kinematics
+            for i = 1:n
+                trs(:,:,i+1) = trs(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
+            end
+            
+            % get the cartesian coordinates of each joint
+            for i = 1:n+1
+                self.joint_trs(i,:) = trs(1:3,4, i)';
+            end
+        end
                 
         % setters
         function setBase(self, pose)
@@ -100,12 +122,13 @@ classdef RobotInterface < handle
             linePoints = self.getLinksAsLines();
 
             radii = zeros(length(n+1), 3);      % preallocate
-%             vertices = empty(1,3, n+1);       % preallocate array to store ellipsoid vertices
             vertices = cell(n+1, 3);
+            centrePoints = zeros(n+1, 3);
 
             % make the base ellipsoid a short sphere
             radii(1,:) = [0.05, 0.05, 0.05];
             [vertices{1,1},vertices{1,2},vertices{1,3}] = ellipsoid(0, 0, 0, radii(1,1), radii(1,2), radii(1,3));
+            centrePoints(1,:) = [0 0 0];
 
             % get the rest of the ellipsoids for each link
             for i = 2:size(linePoints, 3)+1
@@ -120,30 +143,36 @@ classdef RobotInterface < handle
                         radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
                         radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
                         radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
-                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0-max([dx dy dz])/2, 0, radii(i,1), radii(i,2), radii(i,3));
+                        centrePoints(i,:) = [0, 0-max([dx dy dz])/2, 0];
+                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
+
                     else
                         radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
                         radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
                         radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
-                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0+max([dx dy dz])/2, 0, radii(i,1), radii(i,2), radii(i,3));
+                        centrePoints(i,:) = [0, 0+max([dx dy dz])/2, 0];
+                        [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                     end
                 
                 % check if the link has a component in the x direction
                 elseif (self.robot.links(i-1).a ~= 0)
                     radii(i,1) = max([dx dy dz])/2 + 0.1;     % the prinicple radii should half the length of the longest axis plus a little extra
                     radii(i,2:3) = radii(i,1)*0.3;    % the other radii can be proportional to the main one
-                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0+radii(i,1)-0.1, 0, 0, radii(i,1), radii(i,2), radii(i,3));
+                    centrePoints(i,:) = [0+radii(i,1)-0.1, 0, 0, radii(i,1)];
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 else
                     % do default
                     radii(i,1) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
                     radii(i,2:3) = radii(i,1)*0.25;    % the other radii can be proportional to the main one
-                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0, 0, radii(i,1), radii(i,2), radii(i,3));
+                    centrePoints(i,:) = [0 0 0];
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 end
 
                 if i == (size(linePoints, 3)+1)
                     radii(i,3) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
                     radii(i,1:2) = radii(i,3)*0.3;    % the other radii can be proportional to the main one
-                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(0, 0, 0-max([dx dy dz])/2, radii(i,1), radii(i,2), radii(i,3));
+                    centrePoints(i,:) = [0, 0, 0-max([dx dy dz])/2];
+                    [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 end
             end
 
@@ -153,6 +182,10 @@ classdef RobotInterface < handle
                 self.robot.faces{i} = delaunay(self.robot.points{i});
                 warning on
             end
+
+            self.ellipsoid_centres = centrePoints;
+            self.ellipsoid_radii = radii;
+
         end
 
         % functions
