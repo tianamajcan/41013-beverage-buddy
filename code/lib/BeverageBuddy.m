@@ -168,7 +168,7 @@ classdef BeverageBuddy < handle
             end
         end
         
-        % translation
+        % translation for UR3
         
         function translateUR3(self, translation)
             traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*translation, 2);
@@ -177,10 +177,15 @@ classdef BeverageBuddy < handle
             self.ur3.robot.animate(traj(2,:));
         end
         
-        %function translateDobot(self, translation)
-            
-            
-       % end 
+        %translation for Dobot
+        
+        function translateDobot(self, translation)
+            traj = self.dobot.getRMRCTrajectory(self.dobot.getEndEffector()*translation, 2);
+            disp(traj(2,:))
+            disp(self.dobot.getJoints)
+            self.dobot.robot.animate(traj(2,:));
+        end 
+        
         % visual servoing example
         
         function vsExample(self)
