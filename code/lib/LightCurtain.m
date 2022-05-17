@@ -8,7 +8,7 @@ classdef LightCurtain < SensorMock
     
     methods
         
-        function self = LightCurtain(sensed_objects, corner_points, sensor_name)
+        function self = LightCurtain(sensed_objects, sensed_robots, corner_points, sensor_name)
             % class for the light curtain
             % accepts a list of objects that are being tracked 
             % curtain plane
@@ -16,6 +16,7 @@ classdef LightCurtain < SensorMock
             
             arguments
                 sensed_objects;
+                sensed_robots;
                 corner_points (4,3);
                 sensor_name {mustBeText} = 'LightCurtain';
             end
@@ -23,7 +24,7 @@ classdef LightCurtain < SensorMock
 
             
             % calling the sensor mock constructor
-            self@SensorMock(sensor_type, sensed_objects, sensor_name);
+            self@SensorMock(sensor_type, sensed_objects, sensed_robots, sensor_name);
             
             self.corner_points = corner_points;
             self.plane_point = corner_points(1,:);
@@ -55,16 +56,17 @@ classdef LightCurtain < SensorMock
             % 1 is interrupted
             % 0 is uninterrupted
 
-            for i = 1:length(self.sensed_objects)
-                obj = self.sensed_objects{i};
-                % check the objects superclasses
-                classes = superclasses(obj);
-
-                for j = 1:length(classes)
-                    % check if sensed object is a robot
-                    if (strcmp('RobotInterface', classes{j}))
-                        lineSegments = obj.getLinksAsLines();
-
+%             for i = 1:length(self.sensed_objects)
+%                 obj = self.sensed_objects{i};
+%                 % check the objects superclasses
+%                 classes = superclasses(obj);
+% 
+%                 for j = 1:length(classes)
+%                     % check if sensed object is a robot
+%                     if (strcmp('RobotInterface', classes{j}))
+%                         lineSegments = obj.getLinksAsLines();
+            for i = 1:length(self.sensed_robots)
+                lineSegments = obj.getLinksAsLines();
                         % check if any of the robot links intersect the plane, if
                         % so return 1 
                         for k = 1:size(lineSegments,3)
@@ -100,8 +102,8 @@ classdef LightCurtain < SensorMock
                             end
                         end
                     end                
-                end
-            end
+%                 end
+%             end
             
             r = 0;
         end
