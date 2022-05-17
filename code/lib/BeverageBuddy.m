@@ -167,6 +167,37 @@ classdef BeverageBuddy < handle
         function vsExample(self)
             % runs the visual servoing example using an object to back away
             % from
+            % create the visual servoing object (points + object)
+            warn = self.objects{1}.getPose;
+            x = warn(1,4);
+            y = warn(2,4);
+            z = warn(3,4);
+            P=[x-0.25,x-0.25,x+0.25,x+0.25;
+                y,y,y,y;
+                z+0.5,z+1,z+0.5,z+1];
+            pStar = [662 362 362 662; 362 362 662 662];  % target
+            plot_sphere(P, 0.05, 'g'); %  don't need to show this
+            
+            % create the camera
+            self.ur3.vsCreateCamera;
+            
+            % move the head into a position where it can see object
+            start_pos = [-3.51858377202057,-0.0314159265358978,0.383979067689910,-0.282743338823082,1.31946891450771,8.88178419700125e-16];  % arbitrary point located with teach
+            self.ur3.setJoints(start_pos);
+            self.ur3.vsUpdateCamera;
+            
+            % run vsmove
+            pStar = [662 362 362 662; 362 362 662 662];
+
+            % this is the initial pose of the points
+            P=[1.8,1.8,1.8,1.8;
+            -0.25,0.25,0.25,-0.25;
+             1.25,1.25,0.75,0.75];
+            self.ur3.vsMove(P, pStar);
+            
+            % delete the camera
+            pause
+            self.ur3.vsDestroyCamera;
         end
         
         function lightCurtain(self)
