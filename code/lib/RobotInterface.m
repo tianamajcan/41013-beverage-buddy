@@ -100,6 +100,8 @@ classdef RobotInterface < handle
             for i = 1:n+1
                 self.joint_trs(i,:) = trs(1:3,4, i)';
             end
+
+            r = self.joint_trs;
         end
                 
         % setters
