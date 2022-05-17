@@ -87,6 +87,9 @@ classdef BeverageBuddy < handle
                 self.checkEstop();
             end
             
+        end
+        
+        function giveToBuddy(self, drink, drink_index)
             % go to pick up the can again
             steps = 20;
             traj = self.ur3.getRMRCTrajectory(self.drinks{drink_index,drink}.getPose()*transl(0, 0, 0.08)*trotx(pi/2), steps);
@@ -141,7 +144,7 @@ classdef BeverageBuddy < handle
                     self.dobot.robot.animate(traj(i,:));
                     self.checkEstop();
                 end
-                
+
                 % put in the red bin
                 steps = 50;
 
@@ -153,7 +156,7 @@ classdef BeverageBuddy < handle
                     self.drinks{drink_index,drink}.updatePose(tr*trotx(pi)*transl(0,0,-0.13));
                     self.checkEstop();
                 end
-                
+
                 % drink falling in the bin
                 for i = 1:10
                     self.drinks{drink_index,drink}.updatePose(self.drinks{drink_index,drink}.getPose()*transl(0,0,-0.01*i));
@@ -161,7 +164,6 @@ classdef BeverageBuddy < handle
                     drawnow();
                 end
             end
-            
         end
         
         function vsExample(self)
@@ -175,29 +177,20 @@ classdef BeverageBuddy < handle
             P=[x-0.25,x-0.25,x+0.25,x+0.25;
                 y,y,y,y;
                 z+0.5,z+1,z+0.5,z+1];
-            pStar = [662 362 362 662; 362 362 662 662];  % target
+            pStar = [326 362 662 662; 362 662 326 662];  % target
             plot_sphere(P, 0.05, 'g'); %  don't need to show this
             
             % create the camera
             self.ur3.vsCreateCamera;
             
             % move the head into a position where it can see object
-            start_pos = [-3.51858377202057,-0.0314159265358978,0.383979067689910,-0.282743338823082,1.31946891450771,8.88178419700125e-16];  % arbitrary point located with teach
+            start_pos = [-3.39292006587698,-0.911061869541039,1.21475579163921,-0.282743338823082,1.31946891450771,8.88178419700125e-16];  % arbitrary point located with teach
             self.ur3.setJoints(start_pos);
             self.ur3.vsUpdateCamera;
             
             % run vsmove
-            pStar = [662 362 362 662; 362 362 662 662];
-
-            % this is the initial pose of the points
-            P=[1.8,1.8,1.8,1.8;
-            -0.25,0.25,0.25,-0.25;
-             1.25,1.25,0.75,0.75];
             self.ur3.vsMove(P, pStar);
-            
-            % delete the camera
-            pause
-            self.ur3.vsDestroyCamera;
+
         end
         
         function lightCurtain(self)
