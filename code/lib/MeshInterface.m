@@ -54,6 +54,10 @@ classdef MeshInterface < handle
             % gets the objects model
             r = self.model;
         end
+
+        function r = getVertices(self)
+            r = self.vertices;  % vertices at the object pose
+        end
         
     end
 end
