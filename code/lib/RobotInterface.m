@@ -158,7 +158,7 @@ classdef RobotInterface < handle
                 elseif (self.robot.links(i-1).a ~= 0)
                     radii(i,1) = max([dx dy dz])/2 + 0.1;     % the prinicple radii should half the length of the longest axis plus a little extra
                     radii(i,2:3) = radii(i,1)*0.3;    % the other radii can be proportional to the main one
-                    centrePoints(i,:) = [0+radii(i,1)-0.1, 0, 0, radii(i,1)];
+                    centrePoints(i,:) = [0+radii(i,1)-0.1, 0, 0];
                     [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 else
                     % do default
