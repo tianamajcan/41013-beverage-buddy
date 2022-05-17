@@ -133,7 +133,7 @@ classdef RobotInterface < handle
             end
             
             % create and plot the camera
-            self.cam = CentralCamera('focal', 0.08, 'pixel', 10e-5, ...
+            self.cam = CentralCamera('focal', 0.09, 'pixel', 10e-5, ...
                 'resolution', [1024, 1024], 'centre', [512, 512], ...
                 'name', strcat('vscam:', self.robot.name));
             
@@ -176,7 +176,7 @@ classdef RobotInterface < handle
             depth = 1.8;
             
             % motion loop
-            steps = 200;
+            steps = 100;
             for i = 1:steps
                 % compute the view
                 uv = self.cam.plot(object_points);  % gets an updated view of the points
@@ -197,6 +197,14 @@ classdef RobotInterface < handle
                 qp = Jinv * v;
                 
                 % TODO: add in the maximum angular velocity
+                ind=find(qp>pi);
+                 if ~isempty(ind)
+                     qp(ind)=pi;
+                 end
+                 ind=find(qp<-pi);
+                 if ~isempty(ind)
+                     qp(ind)=-pi;
+                 end
                 
                 % update joint positions
                 q = q0 + (1/25) * qp;
@@ -216,6 +224,16 @@ classdef RobotInterface < handle
             
         end
 
-
+        function vsDisplayCamera(self, object_points, target_points)
+            % used to display the vs camera for testing purposes
+            
+            % plotting the camera display
+            self.cam.plot(target_points, '*');
+            self.cam.hold(true);
+            self.cam.plot(object_points, 'Tcam', self.getEndEffector, 'o');
+            self.cam.hold(false);
+            pause;
+            
+        end
     end
 end

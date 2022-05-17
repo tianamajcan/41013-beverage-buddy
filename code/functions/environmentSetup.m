@@ -2,6 +2,12 @@ function [drinks, objects] = environmentSetup(figureHandle)
 % ENVIRONMENTSETUP Performs the setup of the simulation environment, pass
 % the desired figure handle to the function to ensure the environment is
 % plotted in the same figure as robots
+% drinks = {drink_index, drink_type}
+% fanta     1
+% sprite    2
+% coke      3
+% beer      4
+% drink number counts down from 3
 
 figureHandle
 hold on;
@@ -21,7 +27,7 @@ surf([-1.99,-1.99;-1.99,-1.99],[-4,4;-4,4], [3,3;0,0],'CData',imread('fence.jpg'
 surf([-2,2;-2,2], [3.99,3.99;3.99,3.99], [0,0;3,3],'CData',imread('brick.jpg'),'FaceColor','texturemap');
 
 % add warning sign
-warning = MeshInterface('warningsign1.ply', transl(-1.25,-1.65,0.25));
+warning = MeshInterface('warningsign1.ply', transl(-0.7,-2,0.25)*trotz(pi/2));
 
 % add table
 table = MeshInterface('environment_assets/table.ply', se3(se2(-1, -1, pi/2)));
