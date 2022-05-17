@@ -55,7 +55,10 @@ fireExtinguisher = MeshInterface('extinguisher.ply', transl(-1.75,1.5,0));
 % add e-stop button
 estopButton = MeshInterface('stopbutton1.ply', transl(-0.6,-0.25,0.6));
 
-% add some drinks in the fridge
+% add a human "hand" represented by a SerialLink object 
+base = transl(-0.6, 0.5, 1)*trotz(-pi/2);
+hand = SerialLink(Link('d', 0,'a',0.3,'alpha',0,'qlim', 0), 'name', 'hand', 'base', base);
+hand.plot(0, 'nowrist', 'noarrow', 'nojoints')
 
 % preallocate cell for storing drink handles
 drinks = cell(3,4);
