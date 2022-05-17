@@ -55,6 +55,10 @@ fireExtinguisher = MeshInterface('extinguisher.ply', transl(-1.75,1.5,0));
 % add e-stop button
 estopButton = MeshInterface('stopbutton1.ply', transl(-0.6,-0.25,0.6));
 
+% add pole 
+
+pole = MeshInterface('pole1.ply', transl(1.8,-3.8,0));
+
 % add some drinks in the fridge
 
 % preallocate cell for storing drink handles
@@ -73,7 +77,7 @@ for i = 1:3
 end
 
 
-objects = {warning, table, chair, fridgeBase, coaster, yellowBin, redBin, fireExtinguisher, estopButton};
+objects = {warning, table, chair, fridgeBase, coaster, yellowBin, redBin, fireExtinguisher, estopButton, pole};
 
 end
 
