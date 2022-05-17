@@ -66,7 +66,7 @@ classdef LightCurtain < SensorMock
 %                     if (strcmp('RobotInterface', classes{j}))
 %                         lineSegments = obj.getLinksAsLines();
             for i = 1:length(self.sensed_robots)
-                lineSegments = obj.getLinksAsLines();
+                lineSegments = self.sensed_robots{i}.getLinksAsLines();
                         % check if any of the robot links intersect the plane, if
                         % so return 1 
                         for k = 1:size(lineSegments,3)
@@ -95,7 +95,7 @@ classdef LightCurtain < SensorMock
 
                                 % checks if the point is within the bounds
                                 if ((ranges(:,1) < checkPoint) & (checkPoint < ranges(:,2)))
-                                    disp(sprintf("!!!COLLISION DETECTED!!!\nRobot: %s  Point [%.3f,%.3f,%.3f]\nEmergency stop initiated.", obj.robot.name, point(1), point(2), point(3)));
+                                    disp(sprintf("!!!COLLISION DETECTED!!!\nRobot: %s  Point [%.3f,%.3f,%.3f]\nEmergency stop initiated.", self.sensed_robots{i}.robot.name, point(1), point(2), point(3)));
                                     r = 1;
                                     return
                                 end
