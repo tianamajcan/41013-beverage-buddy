@@ -41,7 +41,7 @@ classdef Dobot < RobotInterface
                 self
                 trGoal (4,4) {mustBeNumeric}
                 steps {mustBeNumeric} = 50;
-                qGuess (1,:) {mustBeNomeric} = self.robot.getpos();
+                qGuess (1,:) {mustBeNumeric} = self.robot.getpos();
                 dt = 0.2;
             end
             
