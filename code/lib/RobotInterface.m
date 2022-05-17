@@ -176,7 +176,7 @@ classdef RobotInterface < handle
             depth = 1.8;
             
             % motion loop
-            steps = 200;
+            steps = 100;
             for i = 1:steps
                 % compute the view
                 uv = self.cam.plot(object_points);  % gets an updated view of the points

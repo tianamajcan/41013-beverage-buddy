@@ -176,8 +176,9 @@ classdef BeverageBuddy < handle
             z = warn(3,4);
             P=[x-0.25,x-0.25,x+0.25,x+0.25;
                 y,y,y,y;
-                z+0.5,z+1,z+0.5,z+1];
-            pStar = [326 362 662 662; 362 662 326 662];  % target
+                z+0.5,z+1,z+0.5,z+1];  % corners of the warning sign
+            pStar = [312 312 712 712;
+                     312 712 312 712];  % target
             plot_sphere(P, 0.05, 'g'); %  don't need to show this
             
             % create the camera
