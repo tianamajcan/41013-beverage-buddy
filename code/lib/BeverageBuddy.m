@@ -177,6 +177,10 @@ classdef BeverageBuddy < handle
             self.ur3.robot.animate(traj(2,:));
         end
         
+        %function translateDobot(self, translation)
+            
+            
+       % end 
         % visual servoing example
         
         function vsExample(self)
