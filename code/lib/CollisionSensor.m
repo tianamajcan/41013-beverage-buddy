@@ -4,21 +4,22 @@ classdef CollisionSensor < SensorMock
     % Uses point in ellipsoid method to check for distance til collision
     
     properties
-        sensed_robots
     end
     
     methods
-        function self = CollisionSensor(robots, objects, name)
+        function self = CollisionSensor(sensed_objects, sensed_robots, sensor_name)
             %COLLISIONSENSOR Construct an instance of this class
             %   Detailed explanation goes here
             arguments
-                robots
-                objects
-                name = "Collision Sensor"
+                sensed_objects;
+                sensed_robots;
+                sensor_name = "Collision Sensor";
             end
-            self.sensed_objects = objects;
-            self.sensed_robots = robots;
-            self.sensor_name = name;
+
+            sensor_type = 'Collision Sensor';
+
+            % calling the sensor mock constructor
+            self@SensorMock(sensor_type, sensed_objects, sensed_robots, sensor_name);
 
         end
         
@@ -58,7 +59,7 @@ classdef CollisionSensor < SensorMock
                             object = objects{j}
                             disp(sprintf("WARNING: PERFORMING EMERGENCY STOP TO AVOID COLLISION!\n" + ...
                                 "Upcoming collision detected on the %dth link of robot %s " + ...
-                                "with object at location %.3f, %.3f, %.3f", n, robot.robot.name, object.pose(1,4), object.pose(2,4), object.pose(3,4))
+                                "with object at location %.3f, %.3f, %.3f", n, robot.robot.name, object.pose(1,4), object.pose(2,4), object.pose(3,4)))
                             return
                         else
                             r = 0;
