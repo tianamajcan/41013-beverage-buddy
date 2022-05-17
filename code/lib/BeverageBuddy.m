@@ -33,6 +33,8 @@ classdef BeverageBuddy < handle
             % place sensors
             self.sensors{1} = LightCurtain(self.objects, {self.ur3, self.dobot}, [-0.5, 0, 0.78; -0.5, 0, 1.5; -1.5, 0, 0.78; -1.5, 0, 1.5], "Light Curtain");
             self.sensors{2} = CollisionSensor(self.objects, {self.ur3,self.dobot}, "Magic Collision Sensor");
+
+            self.sensors{1}.makeVisible()
             
         end
         
@@ -40,11 +42,15 @@ classdef BeverageBuddy < handle
             % performs the task of getting the drink
             
             % moving to the can
+            qGuess = [0.6283, -1.0367, 0.9061, 0.0942, 0.5655, 0]
             steps = 50;
-            traj = self.ur3.getTrajectory(self.drinks{drink_index,drink}.getPose()*transl(0, 0, 0.08)*trotx(pi/2)*troty(-pi/2), steps, self.ur3.q0);
+            traj = self.ur3.getTrajectory(self.drinks{drink_index,drink}.getPose()*transl(0, 0, 0.08)*trotx(pi/2)*troty(-pi/2), steps, qGuess);
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -57,6 +63,10 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -69,6 +79,10 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -80,6 +94,10 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -90,6 +108,9 @@ classdef BeverageBuddy < handle
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
                 self.checkEstop();
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
             end
             
         end
@@ -101,6 +122,10 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -112,6 +137,10 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
             
@@ -124,6 +153,10 @@ classdef BeverageBuddy < handle
                 self.ur3.robot.animate(traj(i,:));
                 tr = self.ur3.getEndEffector();
                 self.drinks{drink_index,drink}.updatePose(tr*trotx(-pi/2)*self.drinkOffset);
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
 
@@ -132,23 +165,58 @@ classdef BeverageBuddy < handle
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
                 self.checkEstop();
             end
 
             self.drinks{drink_index,drink}.updatePose(self.drinks{drink_index,drink}.getPose()*trotz(pi/2));
-            
+
+            % dobot grab the empty can/bottle
+            steps = 20;
+            traj = self.dobot.getTrajectory(self.drinks{drink_index,drink}.getPose()*trotx(pi)*trotz(pi/2)*transl(0,0,-0.13), steps);
+
+            for i = 1:steps
+                self.dobot.robot.animate(traj(i,:));
+                
+                if (self.sensors{1}.getSensorResult() == 1)
+                    self.toggleEstop();
+                end
+                self.checkEstop();
+            end
+
             % dobot grab the can
             if drink == 4  % bottle
                 % move to the yellow bin
-            else
-                % move to the red bin
-                steps = 20;
-                traj = self.dobot.getTrajectory(self.drinks{drink_index,drink}.getPose()*trotx(pi)*trotz(pi/2)*transl(0,0,-0.13), steps);
+                steps = 50;
+
+                traj = self.dobot.getTrajectory(transl(-0.25,-1.2,0.8)*trotx(pi)*trotz(pi/2), steps);
 
                 for i = 1:steps
                     self.dobot.robot.animate(traj(i,:));
+                    tr = self.dobot.getEndEffector();
+                    self.drinks{drink_index,drink}.updatePose(tr*trotx(pi)*transl(0,0,-0.13));
+                    
+                    if (self.sensors{1}.getSensorResult() == 1)
+                        self.toggleEstop();
+                    end
                     self.checkEstop();
                 end
+
+            else
+%                 % move to the red bin
+%                 steps = 20;
+%                 traj = self.dobot.getTrajectory(self.drinks{drink_index,drink}.getPose()*trotx(pi)*trotz(pi/2)*transl(0,0,-0.13), steps);
+% 
+%                 for i = 1:steps
+%                     self.dobot.robot.animate(traj(i,:));
+%                     self.checkEstop();
+%                     if (self.sensors{1}.getSensorResult() == 1)
+%                         self.toggleEstop();
+%                     end
+%                 end
 
                 % put in the red bin
                 steps = 50;
@@ -159,16 +227,22 @@ classdef BeverageBuddy < handle
                     self.dobot.robot.animate(traj(i,:));
                     tr = self.dobot.getEndEffector();
                     self.drinks{drink_index,drink}.updatePose(tr*trotx(pi)*transl(0,0,-0.13));
+                    
+                    if (self.sensors{1}.getSensorResult() == 1)
+                        self.toggleEstop();
+                    end
+
                     self.checkEstop();
                 end
-
-                % drink falling in the bin
-                for i = 1:10
-                    self.drinks{drink_index,drink}.updatePose(self.drinks{drink_index,drink}.getPose()*transl(0,0,-0.01*i));
-                    pause(0.05);
-                    drawnow();
-                end
             end
+
+            % drink falling in the bin
+            for i = 1:10
+                self.drinks{drink_index,drink}.updatePose(self.drinks{drink_index,drink}.getPose()*transl(0,0,-0.01*i));
+                pause(0.05);
+                drawnow();
+            end
+
         end
         
         function vsExample(self)
@@ -202,6 +276,16 @@ classdef BeverageBuddy < handle
         function lightCurtain(self)
             % has a foreign object enter through the light curtain causing
             % it to stop
+        end
+
+        function collisionAvoidanceExample(self)
+            ur3.setLinksAsEllipsoids()
+            ur3.plot3d(ur3.q0)
+
+            [r, robot, object] = sensors{2}.getSensorResult(ur3, objects{4})
+            if r == 1
+                self.toggleEstop()
+            end
         end
         
         
