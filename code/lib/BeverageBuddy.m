@@ -31,6 +31,8 @@ classdef BeverageBuddy < handle
             
         end
         
+        % getting drinks
+        
         function getDrink(self, drink, drink_index)
             % performs the task of getting the drink
             
@@ -166,6 +168,17 @@ classdef BeverageBuddy < handle
             end
         end
         
+        % translation
+        
+        function translateUR3(self, translation)
+            traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*translation, 2);
+            disp(traj(2,:))
+            disp(self.ur3.getJoints)
+            self.ur3.robot.animate(traj(2,:));
+        end
+        
+        % visual servoing example
+        
         function vsExample(self)
             % runs the visual servoing example using an object to back away
             % from
@@ -194,11 +207,14 @@ classdef BeverageBuddy < handle
 
         end
         
+        % light curtain example: May be depricated
+        
         function lightCurtain(self)
             % has a foreign object enter through the light curtain causing
             % it to stop
         end
         
+        % estop functions
         
         function checkEstop(self)
             % polls the estop and waits for the reset
