@@ -47,6 +47,8 @@ classdef UR3 < RobotInterface
                 qGuess (1,:) {mustBeNumeric} = self.robot.getpos();
                 dt = 0.2;
             end
+
+            epsilon = 0.1;
             
             trInitial = self.getEndEffector(); %get transform of current end effector position
 
@@ -68,6 +70,13 @@ classdef UR3 < RobotInterface
             for i = 1:steps-1
                 xdot = (x(:,i+1) - x(:,i))/dt;               % Calculate velocity at discrete time step
                 J = self.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
+                m = sqrt(det(J*J'));
+                if m < epsilon  % If manipulability is less than given threshold
+                    lambda = (1 - m/epsilon)*5E-2;
+                else
+                    lambda = 0;
+                end
+                invJ = inv(J'*J + lambda *eye(6))*J';                                   % DLS Inverse
                 qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
                 qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
             end

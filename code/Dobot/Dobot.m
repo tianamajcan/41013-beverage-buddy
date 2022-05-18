@@ -20,7 +20,7 @@ classdef Dobot < RobotInterface
             L2 = Link('d',0,'a',0.135,'alpha',0,'offset',-pi/2,'qlim',[deg2rad(5),deg2rad(85)]);
             L3 = Link('d',0,'a',0.147,'alpha',0,'offset',pi/4,'qlim',[deg2rad(-10),deg2rad(90)]);
             L4 = Link('d',0,'a',0.05,'alpha',-pi/2,'offset',0,'qlim',[deg2rad(-90),deg2rad(90)]);
-            L5 = Link('d',0.05,'a',0,'alpha',0,'offset',0,'qlim',[deg2rad(-85),deg2rad(85)]);
+            L5 = Link('d',0.05,'a',0,'alpha',0,'offset',pi/2,'qlim',[deg2rad(-85),deg2rad(85)]);
             
             % TODO: change default plot3dopts to have the path to the 3d
             % model of dobot
@@ -51,25 +51,38 @@ classdef Dobot < RobotInterface
             % values for roll and pitch are constant pi and 0 respectively
             % due to the nature of the 4th joint always staying level in
             % the real robot
-            x_0 = [trInitial(1:3,4)', pi, 0, rpyInitial(3)]';     % extract the cartesian and rpy values from the initial transform
-            x_f = [trGoal(1:3,4)', pi, 0, rpyInitial(3)]';     % extract the cartesian and rpy values from the goal transform
-
-            x = zeros(6,steps);     % create vector for storing waypoints
-            s = lspb(0,1,steps);    % Create interpolation scalar using trapezoidal profile
+            x_0 = [trInitial(1:3,4)', rpyInitial(1), rpyInitial(3)]';     % extract the cartesian and rpy values from the initial transform
+            
+            % the roll value is either pi or -pi depending on the whether
+            % the end effector is in the y+ or y- half of the x-y plane
+            if trGoal(2,4) > 0
+                x_f = [trGoal(1:3,4)', pi, rpyInitial(3)]';     % extract the cartesian and rpy values from the goal transform
+            elseif trGoal(2,4) < 0
+                x_f = [trGoal(1:3,4)', -pi, rpyInitial(3)]';
+            else 
+                x_f = [trGoal(1:3,4)', 0, rpyInitial(3)]';
+            end
+            
+            x = zeros(5,steps);     % create vector for storing waypoints
+            s = lspb(0,1,steps);    % create interpolation scalar using trapezoidal profile
             
             % Create waypoints along x,y,z,r,p,y
             for i = 1:steps
-                x(:,i) = x_0*(1-s(i)) + s(i)*x_f; 
+                x(:,i) = x_0*(1-s(i)) + s(i)*x_f;
             end
+
+            x(4,(x(2,:) > 0)) = pi;
+            x(4,(x(2,:) < 0)) = -pi;
 
             qMatrix = nan(steps,length(self.robot.links));
 
-            qMatrix(1,:) = self.robot.ikine(trGoal, qGuess, [1 1 1 0 0 1]);  % Solve for joint angles
+            qMatrix(1,:) = self.getJoints();  % Solve for joint angles
 
             for i = 1:steps-1
                 xdot = (x(:,i+1) - x(:,i))/dt;               % Calculate velocity at discrete time step
                 J = self.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
-                qdot = inv(J)*xdot;                              % Solve velocitities via RMRC
+                J = [J(1:4,:); J(6,:)];
+                qdot = inv(J)*xdot;                              % Solve velocitities via RMRC 
                 qMatrix(i+1,:) = qMatrix(i,:) + dt*qdot';    % Update next joint state
             end
 
