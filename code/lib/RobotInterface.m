@@ -144,15 +144,15 @@ classdef RobotInterface < handle
                 if (self.robot.links(i-1).d ~= 0)
                     if self.robot.links(i-1).alpha == pi/2
                         radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
-                        radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
-                        radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        radii(i,1) = radii(i,2)*0.4;    % the other radii can be proportional to the main one
+                        radii(i,3) = radii(i,2)*0.4;    % the other radii can be proportional to the main one
                         centrePoints(i,:) = [0, 0-max([dx dy dz])/2, 0];
                         [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
 
                     else
                         radii(i,2) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
-                        radii(i,1) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
-                        radii(i,3) = radii(i,2)*0.3;    % the other radii can be proportional to the main one
+                        radii(i,1) = radii(i,2)*0.4;    % the other radii can be proportional to the main one
+                        radii(i,3) = radii(i,2)*0.4;    % the other radii can be proportional to the main one
                         centrePoints(i,:) = [0, 0+max([dx dy dz])/2, 0];
                         [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                     end
@@ -160,20 +160,20 @@ classdef RobotInterface < handle
                 % check if the link has a component in the x direction
                 elseif (self.robot.links(i-1).a ~= 0)
                     radii(i,1) = max([dx dy dz])/2 + 0.1;     % the prinicple radii should half the length of the longest axis plus a little extra
-                    radii(i,2:3) = radii(i,1)*0.3;    % the other radii can be proportional to the main one
+                    radii(i,2:3) = radii(i,1)*0.4;    % the other radii can be proportional to the main one
                     centrePoints(i,:) = [0+radii(i,1)-0.1, 0, 0];
                     [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 else
                     % do default
                     radii(i,1) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
-                    radii(i,2:3) = radii(i,1)*0.25;    % the other radii can be proportional to the main one
+                    radii(i,2:3) = radii(i,1)*0.4;    % the other radii can be proportional to the main one
                     centrePoints(i,:) = [0 0 0];
                     [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 end
 
                 if i == (size(linePoints, 3)+1)
                     radii(i,3) = max([dx dy dz])/2 + 0.05;     % the prinicple radii should half the length of the longest axis plus a little extra
-                    radii(i,1:2) = radii(i,3)*0.3;    % the other radii can be proportional to the main one
+                    radii(i,1:2) = radii(i,3)*0.4;    % the other radii can be proportional to the main one
                     centrePoints(i,:) = [0, 0, 0-max([dx dy dz])/2];
                     [vertices{i,1},vertices{i,2},vertices{i,3}] = ellipsoid(centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), radii(i,1), radii(i,2), radii(i,3));
                 end
