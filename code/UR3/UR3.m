@@ -48,7 +48,7 @@ classdef UR3 < RobotInterface
                 dt = 0.2;
             end
 
-            epsilon = 0.1;
+            epsilon = 0.05;
             
             trInitial = self.getEndEffector(); %get transform of current end effector position
 
@@ -70,7 +70,7 @@ classdef UR3 < RobotInterface
             for i = 1:steps-1
                 xdot = (x(:,i+1) - x(:,i))/dt;               % Calculate velocity at discrete time step
                 J = self.robot.jacob0(qMatrix(i,:));              % Get the Jacobian at the current state
-                m = sqrt(det(J*J'));
+                m = sqrt(det(J*J'));    % get the manipulability measure
                 if m < epsilon  % If manipulability is less than given threshold
                     lambda = (1 - m/epsilon)*5E-2;
                 else
