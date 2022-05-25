@@ -74,8 +74,8 @@ classdef BeverageBuddy < handle
             
             % move sideways, holding the can upright
             steps = 50;
-
-            traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*transl(-0.2,0,0)*trotz(-pi/2), steps);
+            qGuess = [0.7263   -1.9189    1.8735    0.0189    2.2941   -0.0176];
+            traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*transl(-0.2,0,0)*trotz(-pi/2), steps, qGuess);
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
@@ -90,7 +90,10 @@ classdef BeverageBuddy < handle
             
             % move to the coaster
             steps = 50;
-            traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*transl(-0.1,-0.4,0.4)*transl(0,0.07,0), steps);
+            R = self.ur3.getEndEffector();
+            R(1:3,4) = 0;       % get the rotation of the end effector
+            traj = self.ur3.getRMRCTrajectory(transl(-0.75,-0.1,0.87)*R, steps);    % hard code coaster location
+%             traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*transl(-0.1,-0.4,0.4)*transl(0,0.07,0), steps);
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
@@ -105,7 +108,7 @@ classdef BeverageBuddy < handle
             
             % move away from the coaster
             steps = 20;
-            traj = self.ur3.getTrajectory(self.ur3.getEndEffector()*transl(0,0.2,-0.3), steps);
+            traj = self.ur3.getRMRCTrajectory(self.ur3.getEndEffector()*transl(0,0.2,-0.2), steps);
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
@@ -149,7 +152,7 @@ classdef BeverageBuddy < handle
             % give the can to the dobot
             steps = 100;
             qGuess = ([-3.5023, -1.0329, 1.6342, -0.6268, 0.8303, 0.0170]);
-            traj = self.ur3.getTrajectory(self.ur3.getEndEffector()*transl(0,-0.15,-0.9)*troty(pi), steps, qGuess);
+            traj = self.ur3.getTrajectory(transl(-0.6,-1.09,0.86)*trotx(pi/2), steps, qGuess);
 
             for i = 1:steps
                 self.ur3.robot.animate(traj(i,:));
