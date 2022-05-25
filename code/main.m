@@ -15,11 +15,11 @@ traj = ur3.getTrajectory(drinks{3,1}.getPose()*transl(0, 0, 0.08)*trotx(pi/2)*tr
 for i = 1:steps
     ur3.robot.animate(traj(i,:));
 end
-
+ 
 %% take can out
 steps = 20;
-
-traj = ur3.getTrajectory(ur3.getEndEffector()*transl(0,0,-0.3), steps, ur3.getJoints());
+qGuess = [0.8501   -1.0351    0.7713    0.2241    0.8594    0.0375]
+traj = ur3.getTrajectory(ur3.getEndEffector()*transl(0,0,-0.3), steps, qGuess);
 
 for i = 1:steps
     ur3.robot.animate(traj(i,:));
@@ -29,8 +29,8 @@ end
 
 %% use rmrc to move sideways
 steps = 50;
-
-traj = ur3.getRMRCTrajectory(ur3.getEndEffector()*transl(-0.2,0,0)*trotz(-pi/2), steps);
+qGuess = [0.7263   -1.9189    1.8735    0.0189    2.2941   -0.0176];
+traj = ur3.getRMRCTrajectory(ur3.getEndEffector()*trotz(-pi/2), steps, qGuess);
 
 for i = 1:steps
     ur3.robot.animate(traj(i,:));
@@ -38,9 +38,15 @@ for i = 1:steps
     drinks{3,1}.updatePose(tr*trotx(-pi/2)*drinkOffset);
 end
 
-%% use rmrc to move to coaster
+%% use rmrc to move to coaster %%% fix to global coordinates
 steps = 50;
-traj = ur3.getRMRCTrajectory(ur3.getEndEffector()*transl(-0.1,-0.4,0.4)*transl(0,0.07,0), steps);
+% traj = ur3.getRMRCTrajectory(ur3.getEndEffector()*transl(-0.1,-0.4,0.4)*transl(0,0.07,0), steps);
+R = ur3.getEndEffector();
+R(1:3,4) = 0;
+traj = ur3.getRMRCTrajectory(transl(-0.75,-0.1,0.87)*R, steps);
+% transl(-0.75,-0.1,0.78)
+% bot = ur3.getEndEffector();
+% goal = objects{5}.getPose();
 
 for i = 1:steps
     ur3.robot.animate(traj(i,:));
@@ -124,3 +130,12 @@ for i = 1:10;
     pause(0.05);
     drawnow();
 end
+
+%%
+ur3.setLinksAsEllipsoids()
+ur3.robot.plot3d(ur3.q0)
+
+sensor = CollisionSensor({objects{4}}, {ur3}, "Magic Collision Sensor");
+
+%%
+[result, robot, object] = sensor.getSensorResult()
