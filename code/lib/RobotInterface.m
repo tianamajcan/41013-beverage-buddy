@@ -97,9 +97,10 @@ classdef RobotInterface < handle
             end
             
             % get the cartesian coordinates of each joint
-            for i = 1:n+1
-                self.joint_trs(i,:) = trs(1:3,4, i)';
-            end
+%             for i = 1:n+1
+%                 self.joint_trs(i,:) = trs(1:3,4, i)';
+%             end
+            self.joint_trs = trs;
 
             r = self.joint_trs;
         end

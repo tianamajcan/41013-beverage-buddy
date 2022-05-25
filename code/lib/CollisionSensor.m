@@ -43,7 +43,7 @@ classdef CollisionSensor < SensorMock
                     % purposes of this simulation 
                     for k = 1:n
                         % add column of ones to be allow calculating the transform the object points
-                        verticesAndOnes = [inv(joints(k)) * [vertices,ones(size(vertices,1),1)]']';
+                        verticesAndOnes = [inv(joints(:,:,k)) * [vertices,ones(size(vertices,1),1)]']';
                         updatedVertices = verticesAndOnes(:,1:3);   % remove column of ones after trasnform
                         % return the (normalised) distance of a set of
                         % points from the center of the ellipsoid. If the
@@ -55,11 +55,12 @@ classdef CollisionSensor < SensorMock
                         if pointsInside > 1
                             % return true
                             r = 1;
-                            robot = self.sensed_robots{i}
-                            object = self.sensed_objects{j}
+                            robot = self.sensed_robots{i};
+                            object = self.sensed_objects{j};
+                            pose = object.getPose();
                             disp(sprintf("WARNING: PERFORMING EMERGENCY STOP TO AVOID COLLISION!\n" + ...
                                 "Upcoming collision detected on the %dth link of robot %s " + ...
-                                "with object at location %.3f, %.3f, %.3f", n, robot.robot.name, object.pose(1,4), object.pose(2,4), object.pose(3,4)))
+                                "with object at location %.3f, %.3f, %.3f", k, robot.robot.name, pose(1,4), pose(2,4), pose(3,4)))
                             return
                         else
                             r = 0;

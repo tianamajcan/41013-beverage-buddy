@@ -8,7 +8,8 @@ classdef MeshInterface < handle
     
     properties (Access = private)
         model;  % the object mesh
-        vertices;  % vertices at the object pose
+        vertices;  % vertices of object in local coordinates
+        global_vertices; %verticles of the object in global coordinates
         pose;  % the pose of the object
     end
     
@@ -36,6 +37,7 @@ classdef MeshInterface < handle
             % updates the pose of the object
             trVertices = [self.vertices, ones(size(self.vertices, 1),1)] * new_pose';
             self.pose = new_pose;
+            self.global_vertices = trVertices(:,1:3);
             set(self.model, 'Vertices', trVertices(:,1:3));
         end
         
@@ -56,7 +58,7 @@ classdef MeshInterface < handle
         end
 
         function r = getVertices(self)
-            r = self.vertices;  % vertices at the object pose
+            r = self.global_vertices;  % vertices at the object pose
         end
         
     end
