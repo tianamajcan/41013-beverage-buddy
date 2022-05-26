@@ -139,3 +139,19 @@ sensor = CollisionSensor({objects{4}}, {ur3}, "Magic Collision Sensor");
 
 %%
 [result, robot, object] = sensor.getSensorResult()
+
+%%
+%         function r = spawnHand(self)
+            % add a human "hand" represented by a SerialLink object 
+            hand = SerialLink(Link('d', 0,'a',0.5,'alpha',0,'qlim', 0), 'name', 'hand', 'base', transl(-0.7, 0.8, 1));
+            hand.plot(0)
+            % get 3d model data from ply file
+            [faceData, vertexData] = plyread('the_hand.ply','tri');
+            
+            hand.faces = {faceData,[]};
+            hand.points = {vertexData*rotz(-pi/2),[]};
+            hand.plot3d(0);
+
+%             self.objects{end+1} = hand;  % append to the end of the objects list
+%             r = hand;   
+%         end
