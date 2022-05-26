@@ -5,6 +5,7 @@ classdef BeverageBuddy < handle
         objects;
         ur3;
         dobot;
+        hand;
         sensors;
         drinkOffset;
         estop = 0;
@@ -298,18 +299,37 @@ classdef BeverageBuddy < handle
 
         end
         
-        % light curtain example: May be depricated
+        % spawn a hand to interact with sensors in the environment
+        function spawnHand(self)
+            % add a human "hand" represented by a SerialLink object 
+            self.hand = Hand();
+            self.hand.setBase(self.hand.getBase()*trotz(-pi/2))
+            self.sensors{1}.sensed_robots{end+1} = self.hand;    % append the hand to the list of sensed objects by the light curtain
+            self.hand.robot.animate(0)
+        end
         
-        function lightCurtain(self)
+        function lightCurtainExample(self)
             % has a foreign object enter through the light curtain causing
             % it to stop
+            
+            steps = 20;
+            for i = 1:steps
+                self.hand.setBase(self.hand.getBase()*transl(0.05, 0, 0));
+                self.hand.robot.animate(0);
+                
+                if self.sensors{1}.getSensorResult() == 1
+                    self.toggleEstop();
+                end
+                self.checkEstop();
+            end
+             
         end
 
         function collisionAvoidanceExample(self)
-            ur3.setLinksAsEllipsoids()
-            ur3.plot3d(ur3.q0)
+            self.ur3.setLinksAsEllipsoids()
+            self.ur3.plot3d(ur3.q0)
 
-            [r, robot, object] = sensors{2}.getSensorResult(ur3, objects{4})
+            [r, robot, object] = self.sensors{2}.getSensorResult()
             if r == 1
                 self.toggleEstop()
             end
