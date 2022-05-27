@@ -28,7 +28,7 @@ classdef UR3 < RobotInterface
             % model of dobot
             self.robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', name, 'base', base);
             self.q0 = q0;
-            self.robot.plot(self.q0, 'noarrow', 'nojoints', 'nowrist');
+            self.robot.plot(self.q0, 'noarrow', 'nojoints', 'nowrist', 'fps', 40);
             
         end
 
