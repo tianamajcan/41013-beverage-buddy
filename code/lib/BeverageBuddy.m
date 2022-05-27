@@ -306,16 +306,21 @@ classdef BeverageBuddy < handle
             self.hand.setBase(self.hand.getBase()*trotz(-pi/2))
             self.sensors{1}.sensed_robots{end+1} = self.hand;    % append the hand to the list of sensed objects by the light curtain
             self.hand.robot.animate(0)
+            view([3 -2 1.5]);
         end
         
         function lightCurtainExample(self)
             % has a foreign object enter through the light curtain causing
             % it to stop
-            
-            steps = 20;
+            steps = 30;
+
+            self.ur3.setJoints(self.ur3.q0);
+            traj = self.ur3.getTrajectory(self.drinks{3,1}.getPose()*transl(0, 0, 0.08)*trotx(pi/2)*troty(-pi/2), steps, [0.6283, -1.0367, 0.9061, 0.0942, 0.5655, 0]);
+
             for i = 1:steps
-                self.hand.setBase(self.hand.getBase()*transl(0.05, 0, 0));
+                self.hand.setBase(self.hand.getBase()*transl(0.02, 0, 0));
                 self.hand.robot.animate(0);
+                self.ur3.robot.animate(traj(i,:));
                 
                 if self.sensors{1}.getSensorResult() == 1
                     self.toggleEstop();
@@ -327,7 +332,7 @@ classdef BeverageBuddy < handle
 
         function collisionAvoidanceExample(self)
             self.ur3.setLinksAsEllipsoids()
-            self.ur3.plot3d(ur3.q0)
+            self.ur3.plot3d(ur3.q0, 'fps', 40)
 
             [r, robot, object] = self.sensors{2}.getSensorResult()
             if r == 1
