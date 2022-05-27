@@ -33,7 +33,7 @@ classdef BeverageBuddy < handle
 
             % place sensors
             self.sensors{1} = LightCurtain(self.objects, {self.ur3, self.dobot}, [-0.5, 0, 0.78; -0.5, 0, 1.5; -1.5, 0, 0.78; -1.5, 0, 1.5], "Light Curtain");
-            self.sensors{2} = CollisionSensor(self.objects, {self.ur3,self.dobot}, "Magic Collision Sensor");
+            self.sensors{2} = CollisionSensor(self.objects(4), {self.ur3}, "Magic Collision Sensor");
 
             self.sensors{1}.makeVisible()
             
@@ -331,12 +331,26 @@ classdef BeverageBuddy < handle
         end
 
         function collisionAvoidanceExample(self)
-            self.ur3.setLinksAsEllipsoids()
-            self.ur3.plot3d(ur3.q0, 'fps', 40)
+%             self.ur3.setLinksAsEllipsoids()
+%             [az, el] = view;
+%             self.ur3.robot.plot3d(ur3.q0, 'fps', 40, 'view', [az,el])
 
-            [r, robot, object] = self.sensors{2}.getSensorResult()
-            if r == 1
-                self.toggleEstop()
+            tr = [-0.5358    0.1582   -0.8294   -1.2096;
+                   -0.8443   -0.1004    0.5263   -0.4097;
+                    0.0000    0.9823    0.1874    1.0601;
+                         0         0         0    1.0000];
+
+            steps = 30;
+            traj = self.ur3.getTrajectory(tr, steps, [1.0053   -0.4084    0.5027   -0.2827    1.5708         0]);
+
+            for i = 1:steps
+                self.ur3.robot.animate(traj(i,:));
+    
+                [r, robot, object] = self.sensors{2}.getSensorResult();
+                if r == 1
+                    self.toggleEstop()
+                end
+                self.checkEstop();
             end
         end
         
