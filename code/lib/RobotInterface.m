@@ -47,11 +47,13 @@ classdef RobotInterface < handle
                 qGuess = self.q0;
             end
 
-            q0 = self.robot.getpos();
-            qf = self.robot.ikcon(trGoal, qGuess);
+            qi = self.robot.getpos();
+            qf = self.robot.ikcon(trGoal, qGuess);  % use inverse kinematics to determine final joint state at the goal
+            disp('Goal position: ')
+            disp(trGoal)
         
             qMatrix = zeros(steps, length(self.robot.links));
-            qMatrix = jtraj(q0, qf, steps);
+            qMatrix = jtraj(qi, qf, steps);         % generate joint trajectory
 
             r = qMatrix;
         

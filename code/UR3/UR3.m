@@ -51,6 +51,8 @@ classdef UR3 < RobotInterface
             epsilon = 0.05;
             
             trInitial = self.getEndEffector(); %get transform of current end effector position
+            disp('Goal position: ')
+            disp(trGoal)
 
             x_0 = [trInitial(1:3,4)' tr2rpy(trInitial)]';     % extract the cartesian and rpy values from the initial transform
             x_f = [trGoal(1:3,4)' tr2rpy(trGoal)]';     % extract the cartesian and rpy values from the goal transform
