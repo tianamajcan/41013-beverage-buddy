@@ -95,7 +95,7 @@ classdef RobotInterface < handle
             
             % calculate transform of every joint using forward kinematics
             for i = 1:n
-                trs(:,:,i+1) = trs(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
+                trs(:,:,i+1) = trs(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha); 
             end
             
             % get the cartesian coordinates of each joint
@@ -237,10 +237,10 @@ classdef RobotInterface < handle
             % create and plot the camera
             self.cam = CentralCamera('focal', 0.09, 'pixel', 10e-5, ...
                 'resolution', [1024, 1024], 'centre', [512, 512], ...
-                'name', strcat('vscam:', self.robot.name));
+                'name', strcat('vscam:', self.robot.name));         %CentralCamera is a class from the robtoics toolbox
             
             % plotting the robot
-            self.cam.plot_camera;
+            self.cam.plot_camera('scale', 0.05);
             self.cam.T = pos;
         end
 
@@ -274,8 +274,8 @@ classdef RobotInterface < handle
             self.cam.plot(object_points, 'Tcam', cam_pos, 'o');
             
             % variables
-            lambda = 0.6;
-            depth = 1.8;
+            lambda = 0.6;   % visual servoing gain, 0 < lambda < 1
+            depth = 1.8;    % value for depth (hardcoded)
             
             % motion loop
             steps = 100;
@@ -299,7 +299,9 @@ classdef RobotInterface < handle
                 qp = Jinv * v;
                 
                 % TODO: add in the maximum angular velocity
-                ind=find(qp>pi);
+                % check if angular velocities exceed +-pi rad/s, if they do
+                % set at the max limit (+-pi)
+                ind=find(qp>pi);    
                  if ~isempty(ind)
                      qp(ind)=pi;
                  end
